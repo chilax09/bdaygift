@@ -90,11 +90,24 @@
     <img class="slide" src="photo3.jpg">
 </div>
 
-<!-- AUDIO FILES -->
-<audio id="glitchSound" src="glitch.mp3"></audio>
-<audio id="typingSound" src="typing.mp3"></audio>
+<!-- AUDIO -->
+<audio id="glitchSound" preload="auto">
+    <source src="glitch.mp3" type="audio/mpeg">
+</audio>
+
+<audio id="typingSound" preload="auto">
+    <source src="typing.mp3" type="audio/mpeg">
+</audio>
 
 <script>
+
+function safePlay(audioElement, volume) {
+    audioElement.volume = volume;
+    const playPromise = audioElement.play();
+    if (playPromise !== undefined) {
+        playPromise.catch(() => {});
+    }
+}
 
 function checkAccess() {
     var sum = document.getElementById("birthSum").value;
@@ -117,7 +130,7 @@ function checkAccess() {
         document.getElementById("message").innerText =
             "Access denied. Imposter detected.";
 
-        document.getElementById("glitchSound").play();
+        safePlay(document.getElementById("glitchSound"), 0.7);
     }
 }
 
@@ -132,9 +145,9 @@ function typeText(text, callback) {
         if (i < text.length) {
             typedText.innerHTML += text.charAt(i);
 
-            var sound = document.getElementById("typingSound");
+            const sound = document.getElementById("typingSound");
             sound.currentTime = 0;
-            sound.play();
+            safePlay(sound, 0.3);
 
             i++;
             setTimeout(typing, speed);
