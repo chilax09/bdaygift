@@ -62,6 +62,7 @@
 
 <body>
 
+<!-- LOGIN -->
 <div id="login" class="center">
     <h1>🔐 Memory Vault</h1>
     <p>Identity verification required.</p>
@@ -71,35 +72,51 @@
     <p id="message"></p>
 </div>
 
+<!-- VERIFYING -->
 <div id="verifying" class="center">
-    <h2>Verifying identity...</h2>
+    <h2 id="verifyText">Verifying identity</h2>
 </div>
 
+<!-- GLITCH + TYPE -->
 <div id="glitchScreen" class="center">
     <div id="glitchText" class="glitch">USER FOUND.</div>
     <div id="typedText" style="margin-top:20px; font-size:28px;"></div>
 </div>
 
+<!-- SLIDESHOW -->
 <div id="slideshow">
     <img class="slide" src="photo1.jpg">
     <img class="slide" src="photo2.jpg">
     <img class="slide" src="photo3.jpg">
+    <img class="slide" src="photo4.jpg">
+    <img class="slide" src="photo5.jpg">
+    <img class="slide" src="photo6.jpg">
 </div>
 
 <!-- AUDIO -->
-<audio id="glitchSound" preload="auto" src="glitch.mp3"></audio>
 <audio id="typingSound" preload="auto" src="typing.mp3"></audio>
 
 <script>
 
-let typingAudio;
-let glitchAudio;
+let typingAudio = document.getElementById("typingSound");
+let verifyInterval;
+
+function startVerifyingAnimation() {
+    const text = document.getElementById("verifyText");
+    let dots = 0;
+
+    verifyInterval = setInterval(() => {
+        dots++;
+        if (dots > 3) dots = 0;
+        text.innerText = "Verifying identity" + ".".repeat(dots);
+    }, 400);
+}
+
+function stopVerifyingAnimation() {
+    clearInterval(verifyInterval);
+}
 
 function unlockAudio() {
-    typingAudio = document.getElementById("typingSound");
-    glitchAudio = document.getElementById("glitchSound");
-
-    // small silent play to unlock browser audio
     typingAudio.volume = 0;
     typingAudio.play().then(() => {
         typingAudio.pause();
@@ -109,7 +126,7 @@ function unlockAudio() {
 
 function checkAccess() {
 
-    unlockAudio(); // IMPORTANT
+    unlockAudio();
 
     var sum = document.getElementById("birthSum").value;
     var age = document.getElementById("age").value;
@@ -119,30 +136,28 @@ function checkAccess() {
         document.getElementById("login").style.display = "none";
         document.getElementById("verifying").style.display = "block";
 
+        startVerifyingAnimation();
+
         setTimeout(function() {
+
+            stopVerifyingAnimation();
             document.getElementById("verifying").style.display = "none";
             document.getElementById("glitchScreen").style.display = "block";
 
             setTimeout(startTypingSequence, 1000);
 
-        }, 2000);
+        }, 2500);
 
     } else {
-
         document.getElementById("message").innerText =
             "Access denied. Imposter detected.";
-
-        // Clone so it always plays fresh
-        let glitchClone = glitchAudio.cloneNode();
-        glitchClone.volume = 0.7;
-        glitchClone.play();
     }
 }
 
 function typeText(text, callback) {
 
     let i = 0;
-    const speed = 75;
+    const speed = 80;
     const typedText = document.getElementById("typedText");
 
     typedText.innerHTML = "";
