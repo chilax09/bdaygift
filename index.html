@@ -51,11 +51,37 @@
             100% { text-shadow: 2px -2px lime; }
         }
 
-        .slide {
+        /* SLIDESHOW */
+
+        #slideshow {
             display: none;
+            position: relative;
             width: 100vw;
             height: 100vh;
+            background: black;
+        }
+
+        .slide {
+            display: none;
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+
+        .slide img {
+            width: 100%;
+            height: 100%;
             object-fit: cover;
+        }
+
+        .caption {
+            position: absolute;
+            bottom: 60px;
+            width: 100%;
+            text-align: center;
+            font-size: 22px;
+            background: rgba(0,0,0,0.6);
+            padding: 12px 0;
         }
     </style>
 </head>
@@ -74,7 +100,7 @@
 
 <!-- VERIFYING -->
 <div id="verifying" class="center">
-    <h2 id="verifyText">Verifying identity</h2>
+    <h2>Verifying identity...</h2>
 </div>
 
 <!-- GLITCH + TYPE -->
@@ -85,12 +111,29 @@
 
 <!-- SLIDESHOW -->
 <div id="slideshow">
-    <img class="slide" src="photo1.jpg">
-    <img class="slide" src="photo2.jpg">
-    <img class="slide" src="photo3.jpg">
-    <img class="slide" src="photo4.jpg">
-    <img class="slide" src="photo5.jpg">
-    <img class="slide" src="photo6.jpg">
+
+    <!-- Intertwined order -->
+    <div class="slide"><img src="photo1.jpg"><div class="caption">A love that started long before 17.</div></div>
+    <div class="slide"><img src="photo8.jpg"><div class="caption">Some friendships feel like destiny.</div></div>
+    <div class="slide"><img src="photo11.jpg"><div class="caption">And some memories are ours alone.</div></div>
+
+    <div class="slide"><img src="photo2.jpg"><div class="caption">From tiny steps...</div></div>
+    <div class="slide"><img src="photo9.jpg"><div class="caption">To laughter that never fades.</div></div>
+    <div class="slide"><img src="photo12.jpg"><div class="caption">You grew into someone incredible.</div></div>
+
+    <div class="slide"><img src="photo3.jpg"><div class="caption">Every year shaping you.</div></div>
+    <div class="slide"><img src="photo10.jpg"><div class="caption">Every smile lighting rooms.</div></div>
+    <div class="slide"><img src="photo13.jpg"><div class="caption">Every moment becoming unforgettable.</div></div>
+
+    <div class="slide"><img src="photo4.jpg"><div class="caption">Strength you didn’t even see.</div></div>
+    <div class="slide"><img src="photo14.jpg"><div class="caption">Courage you carry so effortlessly.</div></div>
+
+    <div class="slide"><img src="photo5.jpg"><div class="caption">Kindness that changes people.</div></div>
+    <div class="slide"><img src="photo15.jpg"><div class="caption">And a heart that feels like home.</div></div>
+
+    <div class="slide"><img src="photo6.jpg"><div class="caption">17 looks beautiful on you.</div></div>
+    <div class="slide"><img src="photo7.jpg"><div class="caption">And this is only the beginning.</div></div>
+
 </div>
 
 <!-- AUDIO -->
@@ -99,22 +142,6 @@
 <script>
 
 let typingAudio = document.getElementById("typingSound");
-let verifyInterval;
-
-function startVerifyingAnimation() {
-    const text = document.getElementById("verifyText");
-    let dots = 0;
-
-    verifyInterval = setInterval(() => {
-        dots++;
-        if (dots > 3) dots = 0;
-        text.innerText = "Verifying identity" + ".".repeat(dots);
-    }, 400);
-}
-
-function stopVerifyingAnimation() {
-    clearInterval(verifyInterval);
-}
 
 function unlockAudio() {
     typingAudio.volume = 0;
@@ -136,17 +163,14 @@ function checkAccess() {
         document.getElementById("login").style.display = "none";
         document.getElementById("verifying").style.display = "block";
 
-        startVerifyingAnimation();
-
         setTimeout(function() {
 
-            stopVerifyingAnimation();
             document.getElementById("verifying").style.display = "none";
             document.getElementById("glitchScreen").style.display = "block";
 
             setTimeout(startTypingSequence, 1000);
 
-        }, 2500);
+        }, 2000);
 
     } else {
         document.getElementById("message").innerText =
@@ -235,13 +259,15 @@ function startSlideshow() {
         for (var i = 0; i < slides.length; i++) {
             slides[i].style.display = "none";
         }
+
         slides[index].style.display = "block";
         index++;
+
         if (index >= slides.length) index = 0;
     }
 
     showSlide();
-    setInterval(showSlide, 3000);
+    setInterval(showSlide, 4000);
 }
 
 </script>
