@@ -42,7 +42,7 @@
 
         .glitch {
             font-size: 35px;
-            animation: glitch 0.2s infinite;
+            animation: glitch 0.15s infinite;
         }
 
         @keyframes glitch {
@@ -62,7 +62,6 @@
 
 <body>
 
-<!-- LOGIN -->
 <div id="login" class="center">
     <h1>🔐 Memory Vault</h1>
     <p>Identity verification required.</p>
@@ -72,18 +71,15 @@
     <p id="message"></p>
 </div>
 
-<!-- VERIFYING -->
 <div id="verifying" class="center">
     <h2>Verifying identity...</h2>
 </div>
 
-<!-- GLITCH + TYPE AREA -->
 <div id="glitchScreen" class="center">
     <div id="glitchText" class="glitch">USER FOUND.</div>
     <div id="typedText" style="margin-top:20px; font-size:28px;"></div>
 </div>
 
-<!-- SLIDESHOW -->
 <div id="slideshow">
     <img class="slide" src="photo1.jpg">
     <img class="slide" src="photo2.jpg">
@@ -91,25 +87,30 @@
 </div>
 
 <!-- AUDIO -->
-<audio id="glitchSound" preload="auto">
-    <source src="glitch.mp3" type="audio/mpeg">
-</audio>
-
-<audio id="typingSound" preload="auto" loop>
-    <source src="typing.mp3" type="audio/mpeg">
-</audio>
+<audio id="glitchSound" preload="auto" src="glitch.mp3"></audio>
+<audio id="typingSound" preload="auto" src="typing.mp3"></audio>
 
 <script>
 
-function safePlay(audioElement, volume) {
-    audioElement.volume = volume;
-    const playPromise = audioElement.play();
-    if (playPromise !== undefined) {
-        playPromise.catch(() => {});
-    }
+let typingAudio;
+let glitchAudio;
+
+function unlockAudio() {
+    typingAudio = document.getElementById("typingSound");
+    glitchAudio = document.getElementById("glitchSound");
+
+    // small silent play to unlock browser audio
+    typingAudio.volume = 0;
+    typingAudio.play().then(() => {
+        typingAudio.pause();
+        typingAudio.currentTime = 0;
+    }).catch(()=>{});
 }
 
 function checkAccess() {
+
+    unlockAudio(); // IMPORTANT
+
     var sum = document.getElementById("birthSum").value;
     var age = document.getElementById("age").value;
 
@@ -122,41 +123,43 @@ function checkAccess() {
             document.getElementById("verifying").style.display = "none";
             document.getElementById("glitchScreen").style.display = "block";
 
-            setTimeout(startTypingSequence, 1200);
+            setTimeout(startTypingSequence, 1000);
 
         }, 2000);
 
     } else {
+
         document.getElementById("message").innerText =
             "Access denied. Imposter detected.";
 
-        safePlay(document.getElementById("glitchSound"), 0.7);
+        // Clone so it always plays fresh
+        let glitchClone = glitchAudio.cloneNode();
+        glitchClone.volume = 0.7;
+        glitchClone.play();
     }
 }
 
 function typeText(text, callback) {
+
     let i = 0;
-    const speed = 80;
+    const speed = 75;
     const typedText = document.getElementById("typedText");
-    const sound = document.getElementById("typingSound");
 
     typedText.innerHTML = "";
 
-    // START typing sound
-    safePlay(sound, 0.25);
+    typingAudio.volume = 0.25;
+    typingAudio.loop = true;
+    typingAudio.play();
 
     function typing() {
         if (i < text.length) {
-
             typedText.innerHTML += text.charAt(i);
             i++;
             setTimeout(typing, speed);
-
         } else {
 
-            // STOP typing sound
-            sound.pause();
-            sound.currentTime = 0;
+            typingAudio.pause();
+            typingAudio.currentTime = 0;
 
             if (callback) {
                 setTimeout(callback, 1000);
@@ -168,6 +171,7 @@ function typeText(text, callback) {
 }
 
 function eraseText(callback) {
+
     const typedText = document.getElementById("typedText");
     let text = typedText.innerHTML;
     let i = text.length;
@@ -206,6 +210,7 @@ function startTypingSequence() {
 }
 
 function startSlideshow() {
+
     document.getElementById("slideshow").style.display = "block";
 
     var slides = document.getElementsByClassName("slide");
@@ -213,13 +218,11 @@ function startSlideshow() {
 
     function showSlide() {
         for (var i = 0; i < slides.length; i++) {
-            slides[i].style.display = "none;
+            slides[i].style.display = "none";
         }
         slides[index].style.display = "block";
         index++;
-        if (index >= slides.length) {
-            index = 0;
-        }
+        if (index >= slides.length) index = 0;
     }
 
     showSlide();
