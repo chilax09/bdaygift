@@ -90,6 +90,10 @@
     <img class="slide" src="photo3.jpg">
 </div>
 
+<!-- AUDIO FILES -->
+<audio id="glitchSound" src="glitch.mp3"></audio>
+<audio id="typingSound" src="typing.mp3"></audio>
+
 <script>
 
 function checkAccess() {
@@ -112,6 +116,8 @@ function checkAccess() {
     } else {
         document.getElementById("message").innerText =
             "Access denied. Imposter detected.";
+
+        document.getElementById("glitchSound").play();
     }
 }
 
@@ -119,11 +125,17 @@ function typeText(text, callback) {
     let i = 0;
     const speed = 70;
     const typedText = document.getElementById("typedText");
+
     typedText.innerHTML = "";
 
     function typing() {
         if (i < text.length) {
             typedText.innerHTML += text.charAt(i);
+
+            var sound = document.getElementById("typingSound");
+            sound.currentTime = 0;
+            sound.play();
+
             i++;
             setTimeout(typing, speed);
         } else if (callback) {
