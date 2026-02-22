@@ -95,7 +95,7 @@
     <source src="glitch.mp3" type="audio/mpeg">
 </audio>
 
-<audio id="typingSound" preload="auto">
+<audio id="typingSound" preload="auto" loop>
     <source src="typing.mp3" type="audio/mpeg">
 </audio>
 
@@ -136,23 +136,31 @@ function checkAccess() {
 
 function typeText(text, callback) {
     let i = 0;
-    const speed = 70;
+    const speed = 80;
     const typedText = document.getElementById("typedText");
+    const sound = document.getElementById("typingSound");
 
     typedText.innerHTML = "";
 
+    // START typing sound
+    safePlay(sound, 0.25);
+
     function typing() {
         if (i < text.length) {
+
             typedText.innerHTML += text.charAt(i);
-
-            const sound = document.getElementById("typingSound");
-            sound.currentTime = 0;
-            safePlay(sound, 0.3);
-
             i++;
             setTimeout(typing, speed);
-        } else if (callback) {
-            setTimeout(callback, 1000);
+
+        } else {
+
+            // STOP typing sound
+            sound.pause();
+            sound.currentTime = 0;
+
+            if (callback) {
+                setTimeout(callback, 1000);
+            }
         }
     }
 
@@ -205,7 +213,7 @@ function startSlideshow() {
 
     function showSlide() {
         for (var i = 0; i < slides.length; i++) {
-            slides[i].style.display = "none";
+            slides[i].style.display = "none;
         }
         slides[index].style.display = "block";
         index++;
